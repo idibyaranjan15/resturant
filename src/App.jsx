@@ -1,5 +1,5 @@
 const App = () => {
-  return <div className="h-screen bg-yellow-400">intial setup</div>;
+  return <div className="h-screen bg-yellow-400">Namaste devvv</div>;
 };
 
 export default App;
