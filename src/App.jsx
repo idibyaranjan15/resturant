@@ -1,28 +1,23 @@
-import React, { useMemo } from "react";
+import React from "react";
 import { useRecoilValue, useSetRecoilState } from "recoil";
-import {
-  jobsAtom,
-  messagingAtom,
-  networkAtom,
-  notificationsAtom,
-  totalNotificationSelector,
-} from "./atoms/atoms";
+import { propertyAtom, totalNotificationSelector } from "./atoms/atoms";
 
 const App = () => {
-  const networkValue = useRecoilValue(networkAtom);
-  const jobsValue = useRecoilValue(jobsAtom);
-  const messageValue = useRecoilValue(messagingAtom);
-  const notificationValue = useRecoilValue(notificationsAtom);
+  // Get the entire state from propertyAtom
+  const { jobsAtom, messagingAtom, networkAtom, notificationsAtom } =
+    useRecoilValue(propertyAtom);
 
-  const incrementMessaging = useSetRecoilState(messagingAtom);
-
-  // const totalNotification = useMemo(() => {
-  //   return notificationValue + messageValue + jobsValue + networkValue;
-  // }, [notificationValue, messageValue, jobsValue, networkValue]);
-  const handleAddMessage = () => {
-    incrementMessaging((value) => value + 1);
-  };
+  // Use selector for the total notification value
   const totalNotificationValue = useRecoilValue(totalNotificationSelector);
+
+  // Increment messaging count
+  const setMessagingAtom = useSetRecoilState(propertyAtom);
+  const handleAddMessage = () => {
+    setMessagingAtom((prev) => ({
+      ...prev,
+      messagingAtom: prev.messagingAtom + 1,
+    }));
+  };
 
   return (
     <div className="flex justify-around items-center bg-blue-700 text-white py-3 px-6 fixed bottom-0 w-full shadow-lg z-50">
@@ -31,25 +26,25 @@ const App = () => {
       <TaskbarItem
         icon="group"
         label="Network"
-        badgeValue={networkValue >= 100 ? "99+" : networkValue}
+        badgeValue={networkAtom >= 100 ? "99+" : networkAtom}
       />
 
       <TaskbarItem
         icon="work"
         label="Jobs"
-        badgeValue={jobsValue > 0 ? jobsValue : undefined}
+        badgeValue={jobsAtom > 0 ? jobsAtom : undefined}
       />
 
       <TaskbarItem
         icon="chat"
         label="Messaging"
-        badgeValue={messageValue > 0 ? messageValue : undefined}
+        badgeValue={messagingAtom > 0 ? messagingAtom : undefined}
       />
 
       <TaskbarItem
         icon="notifications"
         label="Notifications"
-        badgeValue={notificationValue > 0 ? notificationValue : undefined}
+        badgeValue={notificationsAtom > 0 ? notificationsAtom : undefined}
       />
 
       <TaskbarItem
@@ -82,10 +77,13 @@ const TaskbarItem = ({ icon, label, badgeValue, onClick }) => {
 };
 
 const ButtonComp = () => {
-  const incrementNotifications = useSetRecoilState(notificationsAtom);
+  const setNotificationsAtom = useSetRecoilState(propertyAtom);
 
   const handleClick = () => {
-    incrementNotifications((value) => value + 1);
+    setNotificationsAtom((prev) => ({
+      ...prev,
+      notificationsAtom: prev.notificationsAtom + 1,
+    }));
   };
 
   return (
