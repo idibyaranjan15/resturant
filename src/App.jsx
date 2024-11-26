@@ -1,99 +1,33 @@
 import React from "react";
-import { useRecoilValue, useSetRecoilState } from "recoil";
-import { propertyAtom, totalNotificationSelector } from "./atoms/atoms";
+import { useRecoilValue } from "recoil";
+import { TodoList } from "./atoms/TodoAtoms";
 
 const App = () => {
-  // Get the entire state from propertyAtom
-  const { jobsAtom, messagingAtom, networkAtom, notificationsAtom } =
-    useRecoilValue(propertyAtom);
-
-  // Use selector for the total notification value
-  const totalNotificationValue = useRecoilValue(totalNotificationSelector);
-
-  // Increment messaging count
-  const setMessagingAtom = useSetRecoilState(propertyAtom);
-  const handleAddMessage = () => {
-    setMessagingAtom((prev) => ({
-      ...prev,
-      messagingAtom: prev.messagingAtom + 1,
-    }));
-  };
+  const todos = useRecoilValue(TodoList); // Retrieve todo list from Recoil
 
   return (
-    <div className="flex justify-around items-center bg-blue-700 text-white py-3 px-6 fixed bottom-0 w-full shadow-lg z-50">
-      <TaskbarItem icon="home" label="Home" />
-
-      <TaskbarItem
-        icon="group"
-        label="Network"
-        badgeValue={networkAtom >= 100 ? "99+" : networkAtom}
-      />
-
-      <TaskbarItem
-        icon="work"
-        label="Jobs"
-        badgeValue={jobsAtom > 0 ? jobsAtom : undefined}
-      />
-
-      <TaskbarItem
-        icon="chat"
-        label="Messaging"
-        badgeValue={messagingAtom > 0 ? messagingAtom : undefined}
-      />
-
-      <TaskbarItem
-        icon="notifications"
-        label="Notifications"
-        badgeValue={notificationsAtom > 0 ? notificationsAtom : undefined}
-      />
-
-      <TaskbarItem
-        icon="person"
-        label="Me"
-        onClick={handleAddMessage}
-        badgeValue={totalNotificationValue}
-      />
-
-      <ButtonComp />
+    <div className="min-h-screen bg-gray-100 flex flex-col items-center p-6">
+      <h1 className="text-2xl font-bold text-gray-800 mb-6">Todo List</h1>
+      <div className="space-y-4">
+        {todos.map((todo) => (
+          <TodoApp
+            key={todo.id}
+            id={todo.id}
+            title={todo.title}
+            description={todo.description}
+          />
+        ))}
+      </div>
     </div>
   );
 };
 
-const TaskbarItem = ({ icon, label, badgeValue, onClick }) => {
+const TodoApp = ({ id, title, description }) => {
   return (
-    <div
-      className="flex flex-col items-center gap-1 hover:text-gray-300 cursor-pointer relative transition"
-      onClick={onClick}
-    >
-      <span className="material-icons text-3xl">{icon}</span>
-      <span className="text-sm">{label}</span>
-      {badgeValue && (
-        <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center shadow">
-          {badgeValue}
-        </span>
-      )}
-    </div>
-  );
-};
-
-const ButtonComp = () => {
-  const setNotificationsAtom = useSetRecoilState(propertyAtom);
-
-  const handleClick = () => {
-    setNotificationsAtom((prev) => ({
-      ...prev,
-      notificationsAtom: prev.notificationsAtom + 1,
-    }));
-  };
-
-  return (
-    <div>
-      <button
-        className="bg-red-300 hover:bg-blue-400 px-5 py-2 rounded"
-        onClick={handleClick}
-      >
-        Add Notification
-      </button>
+    <div className="bg-white shadow-md rounded-lg p-4 w-80 border border-gray-200">
+      <div className="text-lg font-semibold text-gray-700">#{id}</div>
+      <div className="text-xl font-bold text-gray-900 mt-2">{title}</div>
+      <div className="text-gray-600 mt-1">{description}</div>
     </div>
   );
 };
